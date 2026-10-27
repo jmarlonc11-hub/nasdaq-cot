@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 
 const GLYPHS = "ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄ0123456789NQCOT$%+-";
 
-export default function MatrixRain({ opacity = 0.18 }: { opacity?: number }) {
+export default function MatrixRain({ opacity = 0.12 }: { opacity?: number }) {
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -24,11 +24,11 @@ export default function MatrixRain({ opacity = 0.18 }: { opacity?: number }) {
     window.addEventListener("resize", resize);
 
     const id = window.setInterval(() => {
-      ctx.fillStyle = "rgba(0,0,0,0.12)";
+      ctx.fillStyle = "rgba(11,14,20,0.12)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.font = `${size}px monospace`;
       drops.forEach((y, i) => {
-        ctx.fillStyle = Math.random() > 0.97 ? "#d6ffe0" : "#00ff41";
+        ctx.fillStyle = Math.random() > 0.97 ? "#d7dce5" : "#00bcd4";
         ctx.fillText(GLYPHS[(Math.random() * GLYPHS.length) | 0], i * size, y * size);
         drops[i] = y * size > canvas.height && Math.random() > 0.96 ? 0 : y + 1;
       });
