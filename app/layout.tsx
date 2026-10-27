@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: "Análisis del Commitments of Traders (TFF) del Nasdaq-100 E-mini y Micro.",
 };
 
-export const viewport: Viewport = { themeColor: "#0b0e14" };
+export const viewport: Viewport = { themeColor: "#030805" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

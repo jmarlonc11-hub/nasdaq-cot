@@ -30,8 +30,8 @@ export default function Chart({ series, height = 320 }: { series: ChartSeries[];
       height,
       width: el.clientWidth,
       layout: {
-        background: { type: ColorType.Solid, color: "#111622" },
-        textColor: "#8b95a7",
+        background: { type: ColorType.Solid, color: "#07110b" },
+        textColor: "#5e9a70",
         fontFamily: "'JetBrains Mono', ui-monospace, monospace",
         fontSize: 11,
         attributionLogo: false,
@@ -41,17 +41,17 @@ export default function Chart({ series, height = 320 }: { series: ChartSeries[];
           Math.abs(p) >= 1000 ? Math.round(p).toLocaleString("en-US") : p.toFixed(Math.abs(p) >= 100 ? 0 : 1),
       },
       grid: {
-        vertLines: { color: "#1a2131" },
-        horzLines: { color: "#1a2131" },
+        vertLines: { color: "#0d2416" },
+        horzLines: { color: "#0d2416" },
       },
       crosshair: {
         mode: CrosshairMode.Normal,
-        vertLine: { color: "#5c6679", labelBackgroundColor: "#222b3d" },
-        horzLine: { color: "#5c6679", labelBackgroundColor: "#222b3d" },
+        vertLine: { color: "#3b6a4b", labelBackgroundColor: "#133822" },
+        horzLine: { color: "#3b6a4b", labelBackgroundColor: "#133822" },
       },
-      rightPriceScale: { borderColor: "#222b3d" },
-      leftPriceScale: { visible: usesLeft, borderColor: "#222b3d" },
-      timeScale: { borderColor: "#222b3d", rightOffset: 2 },
+      rightPriceScale: { borderColor: "#133822" },
+      leftPriceScale: { visible: usesLeft, borderColor: "#133822" },
+      timeScale: { borderColor: "#133822", rightOffset: 2 },
     });
 
     for (const s of series) {

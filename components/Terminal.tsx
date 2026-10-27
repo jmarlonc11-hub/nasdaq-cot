@@ -87,7 +87,7 @@ export default function Terminal({ data }: { data: CotPayload }) {
     const from = rows[0].date;
     return {
       title: "NQ",
-      color: "#d7dce5",
+      color: "#e6fff0",
       scale: "right",
       data: data.price.filter((p) => p.date >= from).map((p) => ({ time: p.date, value: p.close })),
     };
@@ -112,9 +112,9 @@ export default function Terminal({ data }: { data: CotPayload }) {
         scale: "left",
         data: idx.map((v, i) => ({ time: rows[i].date, value: Math.round(v * 10) / 10 })),
         bands: [
-          { value: 90, color: "#ef5350" },
-          { value: 50, color: "#5c6679" },
-          { value: 10, color: "#26a69a" },
+          { value: 90, color: "#ff4d6a" },
+          { value: 50, color: "#3b6a4b" },
+          { value: 10, color: "#2bff6a" },
         ],
       },
     ];
@@ -125,7 +125,7 @@ export default function Terminal({ data }: { data: CotPayload }) {
     const s: ChartSeries[] = [
       {
         title: "OI",
-        color: "rgba(0,188,212,0.25)",
+        color: "rgba(43,255,106,0.18)",
         type: "histogram",
         scale: "left",
         data: rows.map((r) => ({ time: r.date, value: r.oi })),

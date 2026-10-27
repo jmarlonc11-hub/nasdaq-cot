@@ -18,11 +18,11 @@ export const CAT_DESC: Record<Cat, string> = {
 };
 
 export const CAT_COLOR: Record<Cat, string> = {
-  dealer: "#f5a623",
-  assetMgr: "#00bcd4",
-  levFunds: "#ec407a",
-  other: "#9575cd",
-  nonRept: "#8b95a7",
+  dealer: "#f5b83d",
+  assetMgr: "#2bff6a",
+  levFunds: "#ff4d6a",
+  other: "#4fd1c5",
+  nonRept: "#7a9c86",
 };
 
 export interface CotRow {

@@ -1,20 +1,20 @@
 @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&display=swap");
 
 :root {
-  --bg: #0b0e14;
-  --panel: #111622;
-  --panel-head: #161c2a;
-  --line: #222b3d;
-  --row-line: #1a2131;
-  --hover: #18202f;
-  --sel: #1b2638;
-  --text: #d7dce5;
-  --muted: #8b95a7;
-  --dim: #5c6679;
-  --amber: #f5a623;
-  --cyan: #00bcd4;
-  --up: #26a69a;
-  --down: #ef5350;
+  --bg: #030805;
+  --panel: #07110b;
+  --panel-head: #0b1a11;
+  --line: #133822;
+  --row-line: #0d2416;
+  --hover: #0d2116;
+  --sel: #10301c;
+  --text: #c6f5d2;
+  --muted: #5e9a70;
+  --dim: #3b6a4b;
+  --amber: #f5b83d;
+  --cyan: #2bff6a;
+  --up: #2bff6a;
+  --down: #ff4d6a;
   --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
@@ -35,8 +35,8 @@ button { font-family: inherit; }
 .down { color: var(--down); }
 .amber { color: var(--amber); }
 .dim { color: var(--dim); }
-.ext-hi { color: #fff; background: var(--down); font-weight: 800; }
-.ext-lo { color: #fff; background: var(--up); font-weight: 800; }
+.ext-hi { color: var(--bg); background: var(--down); font-weight: 800; }
+.ext-lo { color: var(--bg); background: var(--up); font-weight: 800; }
 
 /* Header */
 .top { position: relative; overflow: hidden; border-bottom: 1px solid var(--line); margin: 0 -12px; }
@@ -49,13 +49,14 @@ button { font-family: inherit; }
   gap: 16px;
   flex-wrap: wrap;
   padding: 18px 24px;
-  background: linear-gradient(90deg, rgba(11, 14, 20, 0.92), rgba(11, 14, 20, 0.55) 50%, rgba(11, 14, 20, 0.92));
+  background: linear-gradient(90deg, rgba(3, 8, 5, 0.9), rgba(3, 8, 5, 0.4) 50%, rgba(3, 8, 5, 0.9));
 }
 .brand { display: flex; flex-direction: column; gap: 4px; }
 .logo {
   font-size: 30px;
   font-weight: 800;
-  color: var(--text);
+  color: var(--up);
+  text-shadow: 0 0 10px rgba(43, 255, 106, 0.35);
 }
 .slash { color: var(--amber); }
 .sub { color: var(--muted); font-size: 11px; letter-spacing: 0.2em; }
@@ -71,8 +72,8 @@ button { font-family: inherit; }
 .status { display: flex; gap: 12px; align-items: center; }
 .clock { color: var(--amber); font-size: 14px; font-weight: 600; min-width: 11ch; }
 .badge { padding: 3px 8px; font-weight: 800; font-size: 11px; }
-.badge.live { background: var(--up); color: #fff; }
-.badge.demo { background: var(--amber); color: #0b0e14; }
+.badge.live { background: var(--up); color: var(--bg); }
+.badge.demo { background: var(--amber); color: var(--bg); }
 
 /* Function keys bar (Bloomberg) */
 .fkeys {
@@ -94,7 +95,7 @@ button { font-family: inherit; }
 .fkeys a:hover { background: var(--hover); }
 kbd {
   background: var(--amber);
-  color: #0b0e14;
+  color: var(--bg);
   font-family: inherit;
   font-weight: 800;
   padding: 1px 5px;
@@ -109,13 +110,13 @@ kbd {
   font-weight: 800;
   cursor: pointer;
 }
-.seg button.on { background: var(--amber); color: #0b0e14; }
+.seg button.on { background: var(--amber); color: var(--bg); }
 .seg button:disabled { opacity: 0.3; cursor: not-allowed; }
 
 .warn {
   margin: 10px 0 0;
   padding: 8px 12px;
-  background: rgba(245, 166, 35, 0.1);
+  background: rgba(245, 184, 61, 0.08);
   border: 1px solid var(--amber);
   color: var(--amber);
   font-weight: 600;
