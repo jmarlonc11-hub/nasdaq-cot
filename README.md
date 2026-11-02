@@ -18,7 +18,7 @@ Atajos de teclado: `E` E-mini · `M` Micro · `C` Combinado.
 - Precio: Yahoo Finance (`NQ=F`, con `^NDX` de respaldo).
 - Se revalida cada hora (ISR). Si la CFTC no responde en desarrollo/build, se muestran **datos demo** con aviso visible;
   en producción se sigue sirviendo la última versión buena.
-- Descarga automática: un cron de Vercel (`vercel.json`) llama a `/api/revalidate` el viernes 20–22 UTC (la CFTC publica ~15:30 ET) y el lunes como respaldo por festivos; además la página se refresca sola cada 30 min.
+- Descarga automática: un cron de Vercel (`vercel.json`) llama a `/api/revalidate` el viernes 21 UTC (la CFTC publica ~15:30 ET) y el lunes como respaldo por festivos; además la página se refresca sola cada 30 min.
 - `GET /api/cot` devuelve los datos en JSON.
 
 Variables opcionales: `CRON_SECRET` (protege `/api/revalidate`), `CFTC_APP_TOKEN` (token de Socrata para más cuota), `CFTC_TFF_DATASET`.
