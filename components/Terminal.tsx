@@ -11,6 +11,8 @@ import {
   divergences,
   netSeries,
   nextReleaseDate,
+  releaseDateFor,
+  todayET,
   priceAt,
   rowsFor,
   summarize,
@@ -28,6 +30,9 @@ const fmt = (n: number) => Math.round(n).toLocaleString("en-US");
 const signed = (n: number) => (n > 0 ? "+" : "") + fmt(n);
 const pct = (n: number, d = 1) => (n > 0 ? "+" : "") + n.toFixed(d) + "%";
 const tone = (n: number) => (n > 0 ? "up" : n < 0 ? "down" : "");
+const opt = (n: number | null) => (n == null ? "—" : fmt(n));
+const optSigned = (n: number | null) => (n == null ? "—" : signed(n));
+const optPct = (n: number | null) => (n == null ? "—" : n.toFixed(1));
 const idxTone = (v: number) => (v >= 90 ? "ext-hi" : v <= 10 ? "ext-lo" : "");
 
 function Clock() {
@@ -58,6 +63,9 @@ function Panel({ id, title, right, children }: { id?: string; title: string; rig
 
 export default function Terminal({ data }: { data: CotPayload }) {
   const [view, setView] = useState<ContractView>("emini");
+  // Fecha de hoy solo en el cliente: la página es estática (ISR) y no debe congelar "hoy" en el build.
+  const [today, setToday] = useState<string | null>(null);
+  useEffect(() => setToday(todayET()), []);
   const [focus, setFocus] = useState<Cat>("levFunds");
   const [lookback, setLookback] = useState(52);
   const [shown, setShown] = useState<Cat[]>(["dealer", "assetMgr", "levFunds"]);
@@ -222,9 +230,20 @@ export default function Terminal({ data }: { data: CotPayload }) {
         <Panel title="SNAPSHOT" right={VIEWS.find((v) => v.id === view)?.label}>
           <ul className="kv big">
             <li><span>FECHA POSICIÓN</span><b>{last.date}</b></li>
-            <li><span>PRÓX. REPORTE</span><b className="amber">{nextReleaseDate(last.date)} 15:30 ET</b></li>
+            <li><span>PUBLICADO (APROX.)</span><b>{releaseDateFor(last.date)}</b></li>
+            <li>
+              <span>PRÓX. REPORTE</span>
+              {today && today > nextReleaseDate(last.date) ? (
+                <b title={`Se esperaba el ${nextReleaseDate(last.date)}; la CFTC aún no lo publica`}>
+                  <span style={{ color: "var(--down)" }}>RETRASADO</span> · ESP. {nextReleaseDate(last.date)}
+                </b>
+              ) : (
+                <b className="amber">{nextReleaseDate(last.date)} 15:30 ET</b>
+              )}
+            </li>
             <li><span>OPEN INTEREST</span><b>{fmt(last.oi)}</b></li>
             <li><span>Δ OI SEMANA</span><b className={tone(dOI)}>{signed(dOI)}</b></li>
+            <li><span>TRADERS TOTALES</span><b>{last.traders ? fmt(last.traders.total) : "—"}</b></li>
             {lastPrice != null && (
               <li>
                 <span>NQ AL CORTE</span>
@@ -236,6 +255,7 @@ export default function Terminal({ data }: { data: CotPayload }) {
             )}
             <li><span>LECTURA OI</span><b>{dOI > 0 && lastPrice && prevPrice ? (lastPrice > prevPrice ? "DINERO NUEVO ALCISTA" : "DINERO NUEVO BAJISTA") : dOI < 0 ? "LIQUIDACIÓN / CIERRE" : "—"}</b></li>
           </ul>
+          <p className="note">La fecha de posición es el martes en que se miden las posiciones; la CFTC suele publicarlo el viernes siguiente, a veces con retraso.</p>
         </Panel>
 
         <Panel title="EXTREMOS ACTIVOS" right="IDX ≥90 / ≤10">
@@ -260,7 +280,7 @@ export default function Terminal({ data }: { data: CotPayload }) {
             <thead>
               <tr>
                 <th>CATEGORÍA</th><th>LONG</th><th>Δ</th><th>SHORT</th><th>Δ</th><th>NETO</th><th>Δ NETO</th>
-                <th>%OI L/S</th><th>IDX26</th><th>IDX52</th><th>IDX156</th><th>Z52</th>
+                <th>SPREAD</th><th>Δ</th><th>%OI L/S/SP</th><th title="Número de traders long / short / spread">TRADERS L/S/SP</th><th>IDX26</th><th>IDX52</th><th>IDX156</th><th>Z52</th>
               </tr>
             </thead>
             <tbody>
@@ -273,7 +293,10 @@ export default function Terminal({ data }: { data: CotPayload }) {
                   <td className={tone(-s.dShort)}>{signed(s.dShort)}</td>
                   <td className={tone(s.net)}><b>{signed(s.net)}</b></td>
                   <td className={tone(s.dNet)}>{signed(s.dNet)}</td>
-                  <td>{s.pctLongOI.toFixed(1)}/{s.pctShortOI.toFixed(1)}</td>
+                  <td>{opt(s.spread)}</td>
+                  <td className={s.dSpread == null ? "" : tone(s.dSpread)}>{optSigned(s.dSpread)}</td>
+                  <td>{s.pctLongOI.toFixed(1)}/{s.pctShortOI.toFixed(1)}/{optPct(s.pctSpreadOI)}</td>
+                  <td>{opt(s.tradersLong)}/{opt(s.tradersShort)}/{opt(s.tradersSpread)}</td>
                   <td className={idxTone(s.idx26)}>{s.idx26.toFixed(0)}</td>
                   <td className={idxTone(s.idx52)}>{s.idx52.toFixed(0)}</td>
                   <td className={idxTone(s.idx156)}>{s.idx156.toFixed(0)}</td>
@@ -284,6 +307,7 @@ export default function Terminal({ data }: { data: CotPayload }) {
           </table>
         </div>
         <p className="note">{CAT_DESC[focus]}</p>
+        <p className="note">SP = spread. La CFTC no publica spread ni número de traders para No Reportables. En COMBINADO no se muestran traders porque no se pueden sumar entre contratos.</p>
       </Panel>
 
       <Panel
