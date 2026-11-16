@@ -14,7 +14,14 @@ export function rowsFor(data: CotPayload, view: ContractView): CotRow[] {
       long[c] = r.long[c] + Math.round(m.long[c] / 10);
       short[c] = r.short[c] + Math.round(m.short[c] / 10);
     }
-    return { date: r.date, oi: r.oi + Math.round(m.oi / 10), long, short };
+    const spread: Partial<Record<Cat, number>> = {};
+    for (const c of CATS) {
+      const a = r.spread?.[c];
+      const b = m.spread?.[c];
+      if (a != null || b != null) spread[c] = (a ?? 0) + Math.round((b ?? 0) / 10);
+    }
+    // El número de traders no se puede sumar (un mismo trader puede estar en ambos contratos).
+    return { date: r.date, oi: r.oi + Math.round(m.oi / 10), long, short, spread };
   });
 }
 
@@ -63,6 +70,12 @@ export interface CatSummary {
   dShort: number;
   pctLongOI: number;
   pctShortOI: number;
+  spread: number | null;
+  dSpread: number | null;
+  pctSpreadOI: number | null;
+  tradersLong: number | null;
+  tradersShort: number | null;
+  tradersSpread: number | null;
   idx26: number;
   idx52: number;
   idx156: number;
@@ -75,6 +88,8 @@ export function summarize(rows: CotRow[]): CatSummary[] {
   const prev = rows[i - 1] ?? cur;
   return CATS.map((cat) => {
     const net = netSeries(rows, cat);
+    const sp = cur.spread?.[cat] ?? null;
+    const prevSp = prev.spread?.[cat] ?? null;
     return {
       cat,
       long: cur.long[cat],
@@ -85,6 +100,12 @@ export function summarize(rows: CotRow[]): CatSummary[] {
       dShort: cur.short[cat] - prev.short[cat],
       pctLongOI: cur.oi ? (cur.long[cat] / cur.oi) * 100 : 0,
       pctShortOI: cur.oi ? (cur.short[cat] / cur.oi) * 100 : 0,
+      spread: sp,
+      dSpread: sp != null && prevSp != null ? sp - prevSp : null,
+      pctSpreadOI: sp != null && cur.oi ? (sp / cur.oi) * 100 : null,
+      tradersLong: cur.traders?.long[cat] ?? null,
+      tradersShort: cur.traders?.short[cat] ?? null,
+      tradersSpread: cur.traders?.spread[cat] ?? null,
       idx26: cotIndex(net, i, 26),
       idx52: cotIndex(net, i, 52),
       idx156: cotIndex(net, i, 156),

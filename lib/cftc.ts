@@ -25,6 +25,27 @@ const SHORT_KEY: Record<Cat, string> = {
   nonRept: "nonrept_positions_short",
 };
 
+const SPREAD_KEY: Partial<Record<Cat, string>> = {
+  dealer: "dealer_positions_spread",
+  assetMgr: "asset_mgr_positions_spread",
+  levFunds: "lev_money_positions_spread",
+  other: "other_rept_positions_spread",
+};
+// Prefijo del TFF para el número de traders (traders_<pref>_long/_short/_spread).
+const TRADER_PREFIX: Partial<Record<Cat, string>> = {
+  dealer: "dealer",
+  assetMgr: "asset_mgr",
+  levFunds: "lev_money",
+  other: "other_rept",
+};
+
+function optField(r: RawRow, key: string): number | undefined {
+  const v = r[key] ?? r[`${key}_all`];
+  if (v == null || v === "") return undefined;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : undefined;
+}
+
 function field(r: RawRow, key: string): number {
   const v = r[key] ?? r[`${key}_all`];
   const n = Number(v);
@@ -38,11 +59,28 @@ function toRow(r: RawRow): CotRow {
     long[c] = field(r, LONG_KEY[c]);
     short[c] = field(r, SHORT_KEY[c]);
   }
+  const spread: Partial<Record<Cat, number>> = {};
+  const tLong: Partial<Record<Cat, number>> = {};
+  const tShort: Partial<Record<Cat, number>> = {};
+  const tSpread: Partial<Record<Cat, number>> = {};
+  for (const c of CATS) {
+    const sk = SPREAD_KEY[c];
+    if (sk) spread[c] = optField(r, sk);
+    const tp = TRADER_PREFIX[c];
+    if (tp) {
+      tLong[c] = optField(r, `traders_${tp}_long`);
+      tShort[c] = optField(r, `traders_${tp}_short`);
+      tSpread[c] = optField(r, `traders_${tp}_spread`);
+    }
+  }
+  const total = optField(r, "traders_tot");
   return {
     date: String(r.report_date_as_yyyy_mm_dd ?? "").slice(0, 10),
     oi: field(r, "open_interest"),
     long,
     short,
+    spread,
+    traders: total != null ? { total, long: tLong, short: tShort, spread: tSpread } : undefined,
   };
 }
 

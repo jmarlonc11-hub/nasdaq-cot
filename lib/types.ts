@@ -30,6 +30,17 @@ export interface CotRow {
   oi: number;
   long: Record<Cat, number>;
   short: Record<Cat, number>;
+  /** Posiciones spread (la CFTC no las publica para No Reportables). */
+  spread?: Partial<Record<Cat, number>>;
+  /** Número de traders por categoría (no se publica para No Reportables). */
+  traders?: TraderCounts;
+}
+
+export interface TraderCounts {
+  total: number;
+  long: Partial<Record<Cat, number>>;
+  short: Partial<Record<Cat, number>>;
+  spread: Partial<Record<Cat, number>>;
 }
 
 export interface PricePoint {
