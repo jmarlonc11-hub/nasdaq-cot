@@ -213,8 +213,19 @@ export function backtest(
   };
 }
 
-export function nextReleaseDate(lastReport: string): string {
-  const d = new Date(`${lastReport}T00:00:00Z`);
-  d.setUTCDate(d.getUTCDate() + 10); // martes siguiente + 3 días = viernes
+const addDays = (date: string, days: number) => {
+  const d = new Date(`${date}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + days);
   return d.toISOString().slice(0, 10);
+};
+
+/** Publicación habitual de un reporte: viernes siguiente al martes de la posición (puede retrasarse). */
+export const releaseDateFor = (positionDate: string) => addDays(positionDate, 3);
+
+/** Fecha esperada del próximo reporte: posición del martes siguiente, publicada ese viernes. */
+export function nextReleaseDate(lastReport: string): string {
+  return releaseDateFor(addDays(lastReport, 7));
 }
+
+/** Fecha de hoy en Nueva York (YYYY-MM-DD). */
+export const todayET = () => new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });

@@ -11,6 +11,8 @@ import {
   divergences,
   netSeries,
   nextReleaseDate,
+  releaseDateFor,
+  todayET,
   priceAt,
   rowsFor,
   summarize,
@@ -61,6 +63,9 @@ function Panel({ id, title, right, children }: { id?: string; title: string; rig
 
 export default function Terminal({ data }: { data: CotPayload }) {
   const [view, setView] = useState<ContractView>("emini");
+  // Fecha de hoy solo en el cliente: la página es estática (ISR) y no debe congelar "hoy" en el build.
+  const [today, setToday] = useState<string | null>(null);
+  useEffect(() => setToday(todayET()), []);
   const [focus, setFocus] = useState<Cat>("levFunds");
   const [lookback, setLookback] = useState(52);
   const [shown, setShown] = useState<Cat[]>(["dealer", "assetMgr", "levFunds"]);
@@ -225,7 +230,17 @@ export default function Terminal({ data }: { data: CotPayload }) {
         <Panel title="SNAPSHOT" right={VIEWS.find((v) => v.id === view)?.label}>
           <ul className="kv big">
             <li><span>FECHA POSICIÓN</span><b>{last.date}</b></li>
-            <li><span>PRÓX. REPORTE</span><b className="amber">{nextReleaseDate(last.date)} 15:30 ET</b></li>
+            <li><span>PUBLICADO (APROX.)</span><b>{releaseDateFor(last.date)}</b></li>
+            <li>
+              <span>PRÓX. REPORTE</span>
+              {today && today > nextReleaseDate(last.date) ? (
+                <b title={`Se esperaba el ${nextReleaseDate(last.date)}; la CFTC aún no lo publica`}>
+                  <span style={{ color: "var(--down)" }}>RETRASADO</span> · ESP. {nextReleaseDate(last.date)}
+                </b>
+              ) : (
+                <b className="amber">{nextReleaseDate(last.date)} 15:30 ET</b>
+              )}
+            </li>
             <li><span>OPEN INTEREST</span><b>{fmt(last.oi)}</b></li>
             <li><span>Δ OI SEMANA</span><b className={tone(dOI)}>{signed(dOI)}</b></li>
             <li><span>TRADERS TOTALES</span><b>{last.traders ? fmt(last.traders.total) : "—"}</b></li>
@@ -240,6 +255,7 @@ export default function Terminal({ data }: { data: CotPayload }) {
             )}
             <li><span>LECTURA OI</span><b>{dOI > 0 && lastPrice && prevPrice ? (lastPrice > prevPrice ? "DINERO NUEVO ALCISTA" : "DINERO NUEVO BAJISTA") : dOI < 0 ? "LIQUIDACIÓN / CIERRE" : "—"}</b></li>
           </ul>
+          <p className="note">La fecha de posición es el martes en que se miden las posiciones; la CFTC suele publicarlo el viernes siguiente, a veces con retraso.</p>
         </Panel>
 
         <Panel title="EXTREMOS ACTIVOS" right="IDX ≥90 / ≤10">
